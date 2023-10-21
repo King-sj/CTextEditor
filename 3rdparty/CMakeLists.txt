@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.20)
+if(BUILD_TEST)
+    MESSAGE("Include google-test")
+    add_subdirectory(gtest)
+endif()

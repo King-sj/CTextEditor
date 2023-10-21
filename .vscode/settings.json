@@ -1,3 +1,26 @@
 {
-    "diffEditor.codeLens": true
+    "diffEditor.codeLens": true,
+    "C_Cpp.default.compilerPath": "D:\\mingw-w64\\mingw64\\bin\\g++.exe",
+    "files.associations": {
+        "sstring.h": "c",
+        "compare": "c",
+        "cstdint": "c",
+        "*.tcc": "c",
+        "chrono": "c",
+        "cmath": "c",
+        "complex": "c",
+        "random": "c",
+        "format": "c",
+        "limits": "c",
+        "ranges": "c",
+        "functional": "c",
+        "regex": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "variant": "c",
+        "stdbool.h": "c",
+        "svector.h": "c",
+        "stdlib.h": "c",
+        "string.h": "c"
+    }
 }
