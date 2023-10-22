@@ -26,7 +26,7 @@
 */
 /**
  * @brief : 动态数组模板类,限于c语言，调用模板得先使用SVector_IMPL(T) ,
- *      才能继续使用SVector(T), 对于非平凡类型，必须有 new##T(int size) 方法才可使用
+ *      才能继续使用SVector(T), 对于非平凡类型，必须有 new##T(size_t size) 方法才可使用
 */
 #include<stdlib.h>
 #include<string.h>
@@ -38,49 +38,63 @@
 // 定义vector
 #define SVector(T) SVector$_##T##_$
 #define SVector_STRUCT_IMPL(T) typedef struct {\
-    unsigned int size;\
-    T* data;\
-    unsigned int bufSize;\
+    size_t size;\
+    char* data;\
+    size_t bufSize;\
 } SVector(T);
 // 分配空间
-#define SVectorMalloc(T) SVectorMalloc$_##T_##$
-#define SVectorMalloc_IML(T) void SVectorMalloc(T)(SVector(T)* x, unsigned int size) {\
+#define SVectorMalloc(T) SVectorMalloc$_##T##_$
+#define SVectorMalloc_IML(T) __declspec(dllexport) void SVectorMalloc(T)(SVector(T)* x, size_t size) {\
     x->bufSize = (size/SVectorChunkSize + 1)*SVectorChunkSize;\
-    T* tmp = (T*)malloc(sizeof(T)*x->bufSize);\
-    for (int i = 0; i < x->size; i++) tmp[i] = x->data[i];\
-    for (int i = x->size; i < size; i++) tmp[i] = *newT(T)(0);\
+    char* tmp = (char*)malloc(sizeof(T)*x->bufSize*(sizeof(T)/sizeof(char)));\
+    for (size_t i = 0; i < x->size; i++) tmp[i] = x->data[i];\
+    for (size_t i = x->size; i < size; i++) tmp[i] = 0;\
     free(x->data);\
     x->data = tmp;\
     x->size = size;\
 }
 // 初始化
 #define SVectorInit(T) SVectorInit$_##T##_$
-#define SVectorInit_IMPL(T) void SVectorInit(T)(SVector(T)* x, unsigned int size) {\
+#define SVectorInit_IMPL(T) __declspec(dllexport) void SVectorInit(T)(SVector(T)* x, size_t size) {\
     x->size = 0;\
-    x->data = newT(T)(0);\
+    x->data = (char*)NULL;\
     SVectorMalloc(T)(x, size);\
 }
 // new vector
 #define newSVector(T) newSVector$_##T##_$
-#define newSVector_IMPL(T) SVector(T)* newSVector(T)(unsigned int size) {\
-    SVector(T)* tmp;\
+#define newSVector_IMPL(T) __declspec(dllexport) SVector(T)* newSVector(T)(size_t size) {\
+    SVector(T)* tmp = (SVector(T)*)malloc(sizeof(SVector(T)));\
     SVectorInit(T)(tmp, size);\
     return tmp;\
 }
 // #define
 // 返回所在位置的指针
-#define SVectorAt(T) SVectorAt$_##T_$
-#define SVectorAt_IMPL(T) T* SVectorAt(T)(SVector(T)* x, unsigned int pos) {\
-    if (pos > x->size) {\
-        SVectorMalloc(T)(x, x->size+SVectorChunkSize);\
+#define SVectorAt(T) SVectorAt$_##T##_$
+#define SVectorAt_IMPL(T) __declspec(dllexport) T* SVectorAt(T)(SVector(T)* x, size_t pos) {\
+    if (pos > x->bufSize) {\
+        SVectorMalloc(T)(x, pos+SVectorChunkSize);\
     }\
-    return &x->data[pos];\
+    return (T*)(x->data+pos*(sizeof(T)/sizeof(char)));\
 }
 // all import
 #define SVector_IMPL(T) SVector_STRUCT_IMPL(T) SVectorMalloc_IML(T) \
         SVectorAt_IMPL(T) SVectorInit_IMPL(T) newSVector_IMPL(T)\
-// import vector<int>
-SVector_IMPL(int);
-SVector_IMPL(char);
-SVector_IMPL(SString);
+// import vector<size_t>
+#ifdef __cplusplus
+extern "C" {
+#endif
+    SVector_IMPL(int);
+    SVector_IMPL(size_t);
+    SVector_IMPL(double);
+    SVector_IMPL(float);
+    SVector_IMPL(char);
+    SVector_IMPL(intp);
+    SVector_IMPL(charp);
+    SVector_IMPL(SString);
+#ifdef __cplusplus
+}
+#endif
+
+// SVector_IMPL(char);
+
 #endif  // SVECTOR_H_

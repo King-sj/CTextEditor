@@ -25,30 +25,36 @@
 * Author: KSJ.
 */
 #include<stdbool.h>
+#include<base.h>
 #ifndef SSTRING_H_
 #define SSTRING_H_
 typedef struct _sstring {
-    unsigned int length;  // 字符串长度
-    unsigned int bufferSize;  // buffer 总大小
+    size_t length;  // 字符串长度
+    size_t bufferSize;  // buffer 总大小
     char* data;  // 数据首指针
 }SString;
+#ifdef __cplusplus
+extern "C" {
+#endif
 // 获得新字符串
-__declspec(dllexport) SString* newSString(int size);
+__declspec(dllexport) SString* newSString(size_t size);
 // 释放字符串
 __declspec(dllexport) void freeInitSString(SString* h);
 // 复制字符串
 __declspec(dllexport) void copySString(SString* src, SString* dest);
 // 用字符数组填充字符串, data 的长度不超过 maxSize
-__declspec(dllexport) void fillSString(SString* dest, char* data, unsigned int maxSize);
+__declspec(dllexport) void fillSString(SString* dest, char* data, size_t maxSize);
 // 获取字符串数据
 __declspec(dllexport) char* getSStringData(SString* h);
 // 获取字符串长度
-__declspec(dllexport) unsigned int getSStringLength(SString* h);
+__declspec(dllexport) size_t getSStringLength(SString* h);
 // 判断两个字符串是否相等
 __declspec(dllexport) bool isEqualSString(SString* l, SString* r);
 // 判断字符串和原生字符数组是否相等
 __declspec(dllexport) bool isEqualSStringChars(SString* l, char* r);
 // 判断原生字符数组是否相等
 __declspec(dllexport) bool isEqualChars(char* l, char* r);
-
+#ifdef __cplusplus
+}
+#endif
 #endif  // SSTRING_H_

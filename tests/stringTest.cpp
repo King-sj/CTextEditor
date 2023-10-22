@@ -25,9 +25,9 @@
 * Author: KSJ.
 */
 #include"gtest/gtest.h"
-extern "C"{
+
 #include"sstring.h"
-}
+
 TEST(SString, baseFuncTest) {
     SString* a = newSString(50);
     EXPECT_EQ(a->bufferSize, 100);
@@ -40,6 +40,7 @@ TEST(SString, baseFuncTest) {
     fillSString(a, s[0], 100);
     EXPECT_FALSE(isEqualChars(a->data, s[2]));
     EXPECT_TRUE(isEqualChars(a->data, s[1]));
+    EXPECT_EQ(a->length, 3);
 
     SString* b = newSString(1);
     copySString(a, b);

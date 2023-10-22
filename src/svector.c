@@ -24,4 +24,11 @@
 * ===================================================================
 * Author: KSJ.
 */
-#include<svector.h>
+// #include<svector.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifdef __cplusplus
+}
+#endif

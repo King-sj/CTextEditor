@@ -26,22 +26,18 @@
 */
 #include<string.h>
 #include<stdlib.h>
+#include<inttypes.h>
+#include<stdint.h>
 #ifndef BASE_H_
 #define BASE_H_
-#define Macro2Str(x) #x
-// 平凡类型返回 NULL
-#define newT(T) new##T
-#define newNullT_IMPL(T) T* newT(T)(int) {return NULL;}
-
-#define newTP(T) T##$
-#define newNullTP_IMPL(T) T** newTP(T)(int) {T* tmp = newT(T)(0); return &tmp;}
-newNullT_IMPL(int);
-newNullT_IMPL(char);
-newNullTP_IMPL(int);
-struct SString;
-SString* newTP(SString) {struct SString tmp; return &tmp;}
-newNullTP_IMPL(SString);
-newNullTP_IMPL(newTP(SString));
-
-#define T_TP_IMPL newNullT_IMPL
+#ifdef __c_plus_plus
+extern "C" {
+#endif
+typedef long long ll;
+typedef unsigned long long ull;
+typedef int* intp;
+typedef char* charp;
+#ifdef __c_plus_plus
+extern }
+#endif
 #endif  // BASE_H_
