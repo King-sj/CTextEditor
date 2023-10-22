@@ -164,3 +164,5 @@ CTestTestfile.cmake
 
 *.vcxproj*
 *tmp*
+
+.vscode/**

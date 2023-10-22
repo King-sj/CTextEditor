@@ -21,6 +21,14 @@
         "stdbool.h": "c",
         "svector.h": "c",
         "stdlib.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "inttypes.h": "c",
+        "stdint.h": "c",
+        "algorithm": "cpp",
+        "stop_token": "cpp",
+        "array": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp",
+        "span": "cpp"
     }
 }
