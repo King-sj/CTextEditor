@@ -6,7 +6,7 @@
 // testing::FLAGS_gtest_color()
 // testing::FLAGS_gtest_color
 TEST(VectorTest, INT) {
-    SVector(int)* ve = newSVector(int)(100);
+    SVector(int)* ve = newSVector(int)(20000);
     EXPECT_EQ(ve->size, 100);
     *SVectorAt(int)(ve, 0) = 999;
     EXPECT_EQ(*SVectorAt(int)(ve, 0),999);
@@ -15,6 +15,7 @@ TEST(VectorTest, INT) {
     *x = y;
     EXPECT_EQ(SVectorAt(int)(ve, 9999), x);
     EXPECT_EQ(*SVectorAt(int)(ve, 9999), y);
+    freeSVector(int)(ve);
 }
 
 TEST(VectorTest, SString) {
@@ -22,4 +23,5 @@ TEST(VectorTest, SString) {
     EXPECT_EQ(stringVec->size, 100);
     fillSString(SVectorAt(SString)(stringVec, 0), "hello", 100);
     EXPECT_TRUE(isEqualChars(SVectorAt(SString)(stringVec, 0)->data, "hello"));
+    freeSVector(SString)(stringVec);
 }

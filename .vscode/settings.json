@@ -29,6 +29,24 @@
         "array": "cpp",
         "string_view": "cpp",
         "initializer_list": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "concepts": "cpp",
+        "vector": "cpp",
+        "map": "cpp",
+        "atomic": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "exception": "cpp",
+        "iterator": "cpp",
+        "iosfwd": "cpp",
+        "new": "cpp",
+        "ostream": "cpp",
+        "utility": "cpp",
+        "memory": "cpp",
+        "deque": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "unordered_set": "cpp",
+        "mutex": "cpp"
     }
 }

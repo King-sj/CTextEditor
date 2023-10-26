@@ -32,40 +32,50 @@
 * @todo none
 * @warning some shouldn't do
 */
-#pragma once
+#ifndef __cplusplus
+    #include<string.h>
+    #include<stdlib.h>
+    #include<inttypes.h>
+    #include<stdint.h>
+    #include<stdio.h>
+    #include<time.h>
+    #include<stdbool.h>
+#endif
 #include<concepts>
+#ifndef BASE_H_
+#define BASE_H_
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
+#define Macro2Str(X) #X
+typedef long long ll;
+typedef unsigned long long ull;
+typedef int* intp;
+typedef char* charp;
+#define SIMPLE_TYPE_IMPL(CLASS_IMPL)\
+    CLASS_IMPL(int);\
+    CLASS_IMPL(double);\
+    CLASS_IMPL(float);\
+    CLASS_IMPL(char);\
+    CLASS_IMPL(intp);\
+    CLASS_IMPL(charp);
 #define PrintErr(ty, Msg) \
     time_t curtime;\
     time(&curtime);\
     fprintf(stderr, "(%s)[%s] [%s:%llu] :\n\t %s\n\n", ty, ctime(&curtime), __FILE__, __LINE__, Msg);
-/**
- * @author SJ
- * @date 2023-10-26
- * @fn 判断 x 是否在 [l, r)
- * @param[in] x
- * @param[in] l
- * @param[in] r
- * @retval bool
- * @bug no bug
- * @warning no warning
- * @todo no todo
- * @exception no exception
-*/
+// 判断 x 是否在 [l, r)
+#define isInRange(T) isInRange$_##T##_$
+#define isInRange_IMPL(T) bool isInRange(T)(T x, T l, T r) {\
+    return l <= x && x < r;\
+}
+SIMPLE_TYPE_IMPL(isInRange_IMPL);
+
 template<typename T>
-concept ExistDefaultConstruction = std::is_pointer<T>::value ||
-    requires(T x) {
+concept ExistDefaultConstruction = std::is_pointer<T>::value || requires(T x) {
     x = T();
 };
 
-template<typename T>
-concept CompareAble = requires(T x, T y) {
-    x == y;
-    x < y;
-    x > y;
-};
-
-template<typename T>
-requires CompareAble<T>
-bool isInRange(T x, T l, T r) {
-    return l <= x && x < r;
-}
+// #ifdef __cplusplus
+// extern }
+// #endif
+#endif  // BASE_H_
