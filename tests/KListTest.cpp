@@ -56,3 +56,34 @@ TEST(KList, BaseFunc) {
     EXPECT_EQ(list1.getData(), 2);
     EXPECT_EQ(list1.toNext(), false);
 }
+
+TEST(KList, FOR_IN_RANGFE) {
+    KList<int> lis(0);
+    EXPECT_EQ(lis.getLength(), 1);
+    for (int i = 1; i < 10; i++, lis++) {
+        lis.insertBack(i);
+        EXPECT_EQ(lis.getLength(), i+1);
+    }
+    EXPECT_FALSE(lis.toNext());
+
+    int i = 0;
+    for (auto& x : lis) {
+        EXPECT_EQ(x, i);
+        x*=x;
+        i++;
+    }
+    i = 0;
+    for (auto x : lis) {
+        EXPECT_EQ(x, i*i);
+        i++;
+    }
+    lis.gotoP(lis.getHead());
+    while (lis.getCur()) {
+        if (lis.getData() > 5)lis.erase();
+        else if (!lis.toNext())break;
+    }
+    EXPECT_EQ(lis.getLength(), 3);
+    for (const auto& x : lis) {
+        EXPECT_LE(lis.getData(), 5) << " data: " << lis.getData();
+    }
+}

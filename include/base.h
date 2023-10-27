@@ -33,37 +33,43 @@
 * @warning some shouldn't do
 */
 #pragma once
+#include<time.h>
 #include<concepts>
 #define PrintErr(ty, Msg) \
-    time_t curtime;\
+    {time_t curtime;\
     time(&curtime);\
-    fprintf(stderr, "(%s)[%s] [%s:%llu] :\n\t %s\n\n", ty, ctime(&curtime), __FILE__, __LINE__, Msg);
+    fprintf(stderr, "(%s)[%s] [%s:%llu] :\n\t %s\n\n", ty, ctime(&curtime), __FILE__, __LINE__, Msg);}
 /**
- * @author SJ
- * @date 2023-10-26
- * @fn 判断 x 是否在 [l, r)
- * @param[in] x
- * @param[in] l
- * @param[in] r
- * @retval bool
- * @bug no bug
- * @warning no warning
- * @todo no todo
- * @exception no exception
-*/
+ * @brief 存在默认构造函数
+ * @attention 指针符合要求，默认为nullptr
+ * @tparam T 存在 T()
+ */
 template<typename T>
 concept ExistDefaultConstruction = std::is_pointer<T>::value ||
     requires(T x) {
     x = T();
 };
-
+/**
+ * @brief 可比较类型概念
+ * @author SJ
+ * @tparam T 可比较类型
+ */
 template<typename T>
 concept CompareAble = requires(T x, T y) {
     x == y;
     x < y;
     x > y;
 };
-
+/**
+ * @author SJ
+ * @date 2023-10-26
+ * @brief 判断 x 是否在 [l, r)
+ * @tparam T 可比较大小的类型，例如 int
+ * @param[in] x
+ * @param[in] l 左区间
+ * @param[in] r 右（开）区间
+ * @retval bool
+*/
 template<typename T>
 requires CompareAble<T>
 bool isInRange(T x, T l, T r) {

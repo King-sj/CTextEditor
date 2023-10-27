@@ -38,6 +38,7 @@
 #include<vector>
 #include<memory>
 #include<Iter.hpp>
+#include<cassert>
 /**
  * @author SJ
  * @date 2023-10-26
@@ -56,23 +57,23 @@ class __declspec(dllexport) NativeList{
     NativeList();
     ~NativeList();
     explicit NativeList(const T& data);
+    virtual const T& getData()const;
+    virtual T& getData();
+    virtual NativeList<T>* getNext();
+ public:
     NativeList<T>* pre;
     NativeList<T>* nxt;
     T data;
-    const T& getData()const;
-    T& getData();
-    void operator++();
 };
 /**
  * @author SJ
  * @date 2023-10-26
  * @class KList<T>
  * @brief 链表集成
- * @param[in] T 数据域类型
- * @bug no bug
- * @warning no warning
- * @todo no todo
- * @exception no exception
+ * @tparam[in] T 数据域类型
+ * @bug[1] if erase all, the cur will be nullptr then work is abnormal
+ * @warning now, we shouldn't erase all element
+ * @todo may we should guarantee that it will work in length is 0
 */
 template<typename T>
 class __declspec(dllexport) KList{
@@ -116,8 +117,9 @@ class __declspec(dllexport) KList{
      * @brief 直接跳转到目的指针，目前不检验合法性
      * @author SJ
      * @param pos 目的指针
+     * @warning 请自行保证pos的合法性
      */
-    virtual void gotoP(NativeList<T>* pos);
+    virtual void gotoP(const NativeList<T>* pos);
     /**
      * @brief 在pos后插入新节点
      * @author SJ
@@ -184,11 +186,40 @@ class __declspec(dllexport) KList{
      * @return Iter<NativeList<T>, T>
      */
     virtual Iter<NativeList<T>*, T> end();
+    /**
+     * @brief Get the Length object
+     * @author SJ
+     * @return const size_t
+     */
     virtual const size_t getLength()const;
+    /**
+     * @brief delete pos from KList<T>
+     * @author SJ
+     * @param pos the pointer of what you wanna delete
+     * @warning if pos==cur, default,cur will goNext, if failed , then will goPre
+     *  if both failed, the cur will be nullptr, which is danger
+     */
+    virtual void erase(NativeList<T>* pos);
+    /**
+     * @brief erase current
+     */
+    virtual void erase();
+    /**
+     * @brief Get the Pre object
+     * @author SJ
+     * @return const NativeList<T>*
+     */
+    virtual const NativeList<T>* getPre()const;
+    /**
+     * @brief Get the Nxt object
+     * @author SJ
+     * @return const NativeList<T>*
+     */
+    virtual const NativeList<T>* getNxt()const;
+    virtual const NativeList<T>* getHead()const;
  private:
     NativeList<T>* cur;
     NativeList<T>* head;
-    NativeList<T>* tail;
     size_t length;
 };
 
@@ -197,12 +228,12 @@ template <typename T>
 KList<T>::KList() {
     this->cur = new NativeList<T>();
     this->head = this->cur;
-    this->tail = this->cur;
 }
 
 template <typename T>
 KList<T>::KList(T data) : KList<T>() {
     this->cur->data = data;
+    this->length = 1;
 }
 
 template <typename T>
@@ -235,8 +266,8 @@ const NativeList<T> * KList<T>::getCur() const {
 }
 
 template<typename T>
-void KList<T>::gotoP(NativeList<T>* pos) {
-    this->cur = pos;
+void KList<T>::gotoP(const NativeList<T>* pos) {
+    this->cur =  const_cast<NativeList<T>*>(pos);
 }
 
 template<typename T>
@@ -246,7 +277,6 @@ void KList<T>::insertBack(NativeList<T>* pos, const T & data) {
     tmp->nxt = pos->nxt;
     if (pos->nxt)pos->nxt->pre = tmp;
     pos->nxt = tmp;
-    if (pos == this->tail)this->tail = tmp;  // update tail
     this->length++;
 }
 
@@ -300,17 +330,47 @@ inline Iter<NativeList<T>*, T> KList<T>::begin() {
 
 template<typename T>
 inline Iter<NativeList<T>*, T> KList<T>::end() {
-    /// @Note:tail->nxt为空，这样会有问题吗?
-    /// 出现了错误
-    return Iter<NativeList<T>*, T>(this->tail);
+    return Iter<NativeList<T>*, T>(nullptr);
 }
 template <typename T>
 inline const size_t KList<T>::getLength() const {
     return this->length;
 }
+
+template <typename T>
+inline void KList<T>::erase(NativeList<T> *pos) {
+    assert(pos != nullptr);
+    if (pos->pre) pos->pre->nxt = pos->nxt;
+    if (pos->nxt) pos->nxt->pre = pos->pre;
+    if (pos == this->cur) {
+        if (!this->toNext())
+            if (!this->toPre())
+                PrintErr("ERROR", "KList<T> is null");
+    }
+    delete pos;
+    pos = nullptr;
+    this->length--;
+}
+template <typename T>
+inline void KList<T>::erase() {
+    this->erase(this->cur);
+}
+template <typename T>
+inline const NativeList<T> *KList<T>::getPre() const {
+    return this->cur->pre;
+}
+template <typename T>
+inline const NativeList<T> *KList<T>::getNxt() const {
+    return this->cur->nxt;
+}
+template <typename T>
+inline const NativeList<T> *KList<T>::getHead() const {
+    return this->head;
+}
 template <typename T>
     requires ExistDefaultConstruction<T>
-NativeList<T>::NativeList() {
+NativeList<T>::NativeList()
+{
     this->pre = nullptr;
     this->nxt = nullptr;
     this->data = T();
@@ -319,8 +379,9 @@ NativeList<T>::NativeList() {
 template <typename T>
 requires ExistDefaultConstruction<T>
 NativeList<T>::~NativeList() {
-    delete this->pre;
-    delete this->nxt;
+    /// @attention maybe shouldn't delete them in KList<T>?
+    // if (this->pre) delete this->pre;
+    // if (this->nxt) delete this->nxt;
     this->pre = nullptr;
     this->nxt = nullptr;
 }
@@ -343,8 +404,7 @@ inline T &NativeList<T>::getData() {
     return this->data;
 }
 template <typename T>
-    requires ExistDefaultConstruction<T>
-inline void NativeList<T>::operator++()
-{
-    this = this->nxt;
+requires ExistDefaultConstruction<T>
+inline NativeList<T> *NativeList<T>::getNext() {
+    return this->nxt;
 }

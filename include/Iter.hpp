@@ -32,19 +32,31 @@
  * @todo none
  * @warning some shouldn't do
 */
+#pragma once
+#include<concepts>
+/**
+ * @brief 可迭代指针类型，支持 getData(), getNext()
+ * @author SJ
+ * @tparam pVec 指针类型
+ */
+template<typename pVec>
+concept Iterable = std::is_pointer<pVec>::value && requires(pVec p) {
+    p->getData();
+    p->getNext();
+};
 /**
  * @author SJ
  * @date 2023-10-27
  * @class
- * @param[in] pVec 指针类型,支持operator++(),以及getData()
- * @param[in] DataType pVec 指向的数据类型[pVec->getData]
+ * @tparam[in] pVec 指针类型,支持pVec getNext(),以及getData()
+ * @tparam[in] DataType pVec 指向的数据类型[pVec->getData]
  * @brief 自定义迭代器
  * @bug no bug
  * @warning no warning
  * @todo no todo
  * @exception no exception
 */
-template<typename pVec, typename DataType>
+template<Iterable pVec, typename DataType>
 class Iter {
  public:
     explicit Iter(pVec p_vec):p_vec(p_vec) {}
@@ -55,7 +67,7 @@ class Iter {
         return this->p_vec->getData();
     }
     const Iter& operator++() {
-        ++p_vec;
+        p_vec = p_vec->getNext();
         return *this;
     }
     pVec p_vec;

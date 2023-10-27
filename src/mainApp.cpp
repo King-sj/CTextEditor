@@ -35,21 +35,7 @@
 */
 #include"KList.hpp"
 #include<iostream>
+
 int main() {
-    KList<int> lis(0);
-    for (int i = 1; i < 10; i++, lis++) {
-        lis.insertBack(i);
-        // lis.setData(i*lis.getData());
-    }
-    // for (int i = 1; i < 10; i++) {
-    //     std::cout << lis.getData() << std::endl;
-    //     lis.toPre();
-    // }
-    int i = 0;
-    for (auto& x : lis) {
-        std::cout << x << std::endl;
-        i++;
-        if (i > 10)break;
-    }
     return 0;
 }
