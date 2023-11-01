@@ -166,3 +166,6 @@ CTestTestfile.cmake
 *tmp*
 
 .vscode/**
+build/**
+.vs/**
+*.log

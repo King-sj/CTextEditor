@@ -31,3 +31,4 @@ foreach(full_name ${test_src})
     AddTest(${name} cpp)
 endforeach()
 
+target_sources(KListTest PUBLIC ../src/KString.cpp)

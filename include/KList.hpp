@@ -55,7 +55,7 @@ requires ExistDefaultConstruction<T>
 class __declspec(dllexport) NativeList{
  public:
     NativeList();
-    ~NativeList();
+    virtual ~NativeList();
     explicit NativeList(const T& data);
     virtual const T& getData()const;
     virtual T& getData();
@@ -96,6 +96,20 @@ class __declspec(dllexport) KList{
      */
     virtual bool toPre();
     /**
+     * @brief 到第一个元素
+     *
+     * @return true
+     * @return false
+     */
+    virtual bool toHead();
+    /**
+     * @brief 到最后一个非空[nullptr]元素
+     * @author SJ
+     * @return true
+     * @return false KList<T> 为空
+     */
+    virtual bool toEnd();
+    /**
      * @brief Get the Data object
      * @author SJ
      * @return const T&
@@ -113,6 +127,13 @@ class __declspec(dllexport) KList{
      * @return const NativeList* point current
      */
     virtual const NativeList<T>* getCur()const;
+    /**
+     * @brief Set the Cur object
+     * @attention please sure that input is valid
+     * @author SJ
+     * @return const NativeList<T>*
+     */
+    virtual void setCur(NativeList<T>*);
     /**
      * @brief 直接跳转到目的指针，目前不检验合法性
      * @author SJ
@@ -191,7 +212,7 @@ class __declspec(dllexport) KList{
      * @author SJ
      * @return const size_t
      */
-    virtual const size_t getLength()const;
+    virtual size_t getLength()const;
     /**
      * @brief delete pos from KList<T>
      * @author SJ
@@ -217,9 +238,15 @@ class __declspec(dllexport) KList{
      */
     virtual const NativeList<T>* getNxt()const;
     virtual const NativeList<T>* getHead()const;
+    /**
+     * @brief 除了当前指针全删除了
+     * @attention 因为尚未保证KList<T>为空时正常运行，从而先这般
+     */
+    virtual void clearExceptCur();
  private:
     NativeList<T>* cur;
     NativeList<T>* head;
+    NativeList<T>* preTail;  /// 尾指针[nullptr]的前一个
     size_t length;
 };
 
@@ -228,6 +255,8 @@ template <typename T>
 KList<T>::KList() {
     this->cur = new NativeList<T>();
     this->head = this->cur;
+    this->preTail = this->cur;
+    this->length = 1;
 }
 
 template <typename T>
@@ -251,7 +280,22 @@ bool KList<T>::toPre() {
 }
 
 template <typename T>
-const T &KList<T>::getData() const {
+inline bool KList<T>::toHead() {
+    this->cur = this->head;
+    if (this->cur)return true;
+    return false;
+}
+
+template <typename T>
+inline bool KList<T>::toEnd() {
+    this->cur = this->preTail;
+    if (this->cur)return true;
+    return false;
+}
+
+template <typename T>
+const T &KList<T>::getData() const
+{
     return this->cur->data;
 }
 
@@ -263,6 +307,11 @@ void KList<T>::setData(const T & data) const {
 template<typename T>
 const NativeList<T> * KList<T>::getCur() const {
     return this->cur;
+}
+
+template <typename T>
+inline void KList<T>::setCur(NativeList<T> * pos) {
+    this->cur = pos;
 }
 
 template<typename T>
@@ -278,6 +327,7 @@ void KList<T>::insertBack(NativeList<T>* pos, const T & data) {
     if (pos->nxt)pos->nxt->pre = tmp;
     pos->nxt = tmp;
     this->length++;
+    if (nullptr == pos->nxt)this->preTail = tmp;
 }
 
 template<typename T>
@@ -289,8 +339,8 @@ void KList<T>::insertPre(NativeList<T>* pos, const T & data) {
         tmp->nxt = pos;
         pos->pre = tmp;
         this->length++;
+        this->head = tmp;
     }
-    if (this->head == pos)this->head = pos->pre;
 }
 
 template<typename T>
@@ -300,7 +350,7 @@ void KList<T>::insertBack(const T& data) {
 
 template<typename T>
 void KList<T>::insertPre(const T & data) {
-    if (this->cur->pre)this->insertPre(this->cur, data);
+    this->insertPre(this->cur, data);
 }
 
 template <typename T>
@@ -333,7 +383,7 @@ inline Iter<NativeList<T>*, T> KList<T>::end() {
     return Iter<NativeList<T>*, T>(nullptr);
 }
 template <typename T>
-inline const size_t KList<T>::getLength() const {
+inline size_t KList<T>::getLength() const {
     return this->length;
 }
 
@@ -341,7 +391,10 @@ template <typename T>
 inline void KList<T>::erase(NativeList<T> *pos) {
     assert(pos != nullptr);
     if (pos->pre) pos->pre->nxt = pos->nxt;
+    else this->head = pos->nxt;
+
     if (pos->nxt) pos->nxt->pre = pos->pre;
+    else this->preTail = pos->pre;
     if (pos == this->cur) {
         if (!this->toNext())
             if (!this->toPre())
@@ -366,6 +419,12 @@ inline const NativeList<T> *KList<T>::getNxt() const {
 template <typename T>
 inline const NativeList<T> *KList<T>::getHead() const {
     return this->head;
+}
+template <typename T>
+inline void KList<T>::clearExceptCur() {
+    while (this->toNext())this->erase();
+    while (this->toPre())this->erase();
+    // final return cur
 }
 template <typename T>
     requires ExistDefaultConstruction<T>

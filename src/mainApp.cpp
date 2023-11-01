@@ -32,10 +32,48 @@
  * @bug 结果不符合预期
  * @todo none
  * @warning some shouldn't do
-*/
-#include"KList.hpp"
-#include<iostream>
-
-int main() {
+ */
+#include "KString.h"
+#include <iostream>
+#include <string>
+#include "../include/RBTree.hpp"
+struct T
+{
+    int v;
+    T(int v) : v(v) {}
+    friend bool operator<(const T &l, const T &r)
+    {
+        return l.v < r.v;
+    }
+    friend bool operator==(const T &l, const T &r)
+    {
+        return l.v == r.v;
+    }
+    friend bool operator<=(const T &l, const T &r)
+    {
+        return l < r || l == r;
+    }
+    friend bool operator>(const T &l, const T &r)
+    {
+        return !(l <= r);
+    }
+};
+redblacktree<T> t;
+int main()
+{
+    // t.insert(1);
+    // t.insert(3);
+    // t.insert(7);
+    // std::cout << (*t.kth(2)).v << std::endl;
+    std::string str = "hyhdxxeztnzhsofqetokoytnwaiygitsffkcbgrgrveabmampyypcpkheaetzvltgnyzaygqeuluaevzsmptadpiymfbiziesqhvvpfcgxpdfcpoxxnvxydwslctsunodeinfcwsioxluxsnhomkdrykhasrkdfhyzcvnqcawtyyjnvoawbdxvzcjrswwpietphqdhiwbxtzssjrldfoeizndoipbtmgaluwgjmssfzyrxivbhhaonwmjgwhfjbtmdxivolnlqzavfqjjlfyvthxffqftyfqorjldwtsquxshaamufrkzwigcoyedblgnkpxbwgoklmlkidyejtxdplwcyhxwlknkbbharqmtqvwefynsokrebocggnxoqyiny";
+    std::string subStr = "ydwslctsunodeinfcwsioxluxsnhomkdrykhasrkdfhyzcvnqcawtyyjnvoawbdxvzcjrswwpietphqdhiwbxtzssjrldfoeizndoipbtmgaluwgjmssfzyrxivbhhaonwmjgwhfjbtmdxivolnlqzavfqjjlfyvthxffqftyfqorjldwtsquxshaamufrkzwigcoyedblgnkpxbwgoklmlkidyejtxdplwcyhxwlknkbbharqmtqvwefynsokrebocggnxoqyiny";
+    auto pa = KString(subStr);
+    auto fa = KString(str);
+    std::cout << str.size() << " " << subStr.size()  << std::endl;
+    std::cout  << str.find(subStr)  << std::endl;
+    std::cout << fa.getLength() << " " << pa.getLength() << std::endl;
+    std::cout << fa.find(pa) << std::endl;
+    assert(str == fa.toString());
+    assert(subStr == pa.toString());
     return 0;
 }

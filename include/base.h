@@ -75,3 +75,13 @@ requires CompareAble<T>
 bool isInRange(T x, T l, T r) {
     return l <= x && x < r;
 }
+
+#if __cplusplus < 202002L
+    /**
+     * @brief 分支预测兼容代码
+     * @author SJ
+     * @todo[SJ] 添加对c++20之前版本的兼容
+     */
+    #define likely(x) __builtin_expect(!!(x), 1)
+    #define unlikely(x) __builtin_expect(!!(x), 0)
+#endif
