@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 23)
 # set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=leak -fsanitize=addres")
 # set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c2x -Wall -Wextra")
 
+add_compile_definitions(RESOURCE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resource/")
+
+
 option(BUILD_TEST "compile unit-test mod" ON)
 # set(publish_lib_release ${PROJECT_SOURCE_DIR}/build/lib/)
 
@@ -16,8 +19,11 @@ option(BUILD_TEST "compile unit-test mod" ON)
 add_subdirectory(3rdparty)
 add_subdirectory(src)
 
-add_executable(app src/mainApp.cpp src/KString.cpp src/TextLine.cpp)
-target_include_directories(app PUBLIC ./include/)
+add_executable(app src/mainApp.cpp src/KString.cpp src/TextLine.cpp
+    src/TextEdit.cpp src/menu.cpp)
+target_include_directories(app PUBLIC include/ 3rdparty/cxxopts/include)
+target_compile_definitions(app PRIVATE RESOURCE_PATH)
+
 # target_sources(./include)
 if(BUILD_TEST)
     enable_testing()
@@ -41,3 +47,5 @@ install(TARGETS
     FILE_SET HEADERS  # Following options apply to file set HEADERS.
         COMPONENT Development
 )
+add_executable(tmp tmp/tmp.cpp)
+target_include_directories(tmp PUBLIC include/ 3rdparty/cxxopts/include)

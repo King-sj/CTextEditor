@@ -115,6 +115,7 @@ class __declspec(dllexport) KList{
      * @return const T&
      */
     virtual const T& getData()const;
+    virtual T& getData();
     /**
      * @brief Set the Data object
      * @author SJ
@@ -294,8 +295,12 @@ inline bool KList<T>::toEnd() {
 }
 
 template <typename T>
-const T &KList<T>::getData() const
-{
+const T &KList<T>::getData() const {
+    return this->cur->data;
+}
+
+template <typename T>
+inline T &KList<T>::getData() {
     return this->cur->data;
 }
 

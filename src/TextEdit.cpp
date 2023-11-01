@@ -23,16 +23,54 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY SongJian, GROUP AND CONTRIBUTORS
  *  ===================================================================
- * @file TextLine.cpp
+ * @file TextEdit.cpp
  * @author KSJ
  * @date 2023-11-01
- * @version
- * @brief 单行文本类
+ * @version 0.0.1
+ * @brief 文本编辑类
  * @bug none found
  * @todo none
  * @warning some shouldn't do
 */
-#include<TextLine.h>
+#include<TextEdit.h>
+#include<fstream>
+TextEdit::TextEdit() {
+}
+void TextEdit::loadFile(const char *fileName) {
+    std::ifstream file(fileName);
+    if (!file.is_open()) {
+        throw "open file failed";
+        return;
+    }
+    this->clear();
+    char ch;
+    while (!file.eof()) {
+        ch = file.get();
+        if (ch == '\n') {
+            this->lines.insertBack(TextLine());  // insert new line
+            this->lines.toNext();
+        } else {
+            this->lines.getData().insertBack(ch);
+            this->lines.getData().toNext();
+        }
+    }
+    file.close();
+}
 
-TextLine::TextLine() : KString() {
+KList<TextLine>& TextEdit::getLines() {
+    return this->lines;
+}
+
+void TextEdit::showText() {
+    for (auto& line : this->lines) {
+        for (auto& ch : line) {
+            std::cout << ch;
+        }
+        std::cout << std::endl;
+    }
+}
+
+void TextEdit::clear() {
+    this->lines.toHead();
+    this->lines.clearExceptCur();
 }

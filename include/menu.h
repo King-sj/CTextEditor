@@ -23,16 +23,41 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY SongJian, GROUP AND CONTRIBUTORS
  *  ===================================================================
- * @file TextLine.cpp
+ * @file menu.h
  * @author KSJ
  * @date 2023-11-01
- * @version
- * @brief 单行文本类
+ * @version 0.0.1
+ * @brief 菜单的宏定义
  * @bug none found
  * @todo none
  * @warning some shouldn't do
 */
-#include<TextLine.h>
+#pragma once
+#include<TextEdit.h>
 
-TextLine::TextLine() : KString() {
-}
+#define READ_FILE 1
+#define QUIT 9
+#define CLEAR 10
+#define SHOW_MENU 11
+#ifndef RESOURCE_PATH
+    #define RESOURCE_PATH ""
+#endif
+
+static TextEdit menu, text;
+/**
+ * @brief 初始化
+ * @author SJ
+ */
+void init();
+void update();
+void readFile();
+void quit();
+void clear();
+__attribute((__always_inline__))
+void showMenu();
+/**
+ * @brief 事件循环
+ * @author SJ
+ * @return int 正常退出返回0
+ */
+int exec();

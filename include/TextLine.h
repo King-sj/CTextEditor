@@ -32,7 +32,9 @@
  * @todo none
  * @warning some shouldn't do
 */
-class TextLine {
+#pragma once
+#include<KString.h>
+class TextLine : public KString {
  private:
     /* data */
  public:

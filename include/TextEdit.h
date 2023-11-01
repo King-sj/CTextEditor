@@ -23,16 +23,26 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY SongJian, GROUP AND CONTRIBUTORS
  *  ===================================================================
- * @file TextLine.cpp
+ * @file TextEdit.h
  * @author KSJ
  * @date 2023-11-01
- * @version
- * @brief 单行文本类
+ * @version 0.0.1
+ * @brief 文本编辑类
  * @bug none found
  * @todo none
  * @warning some shouldn't do
 */
+#pragma once
 #include<TextLine.h>
+#include<KList.hpp>
+class TextEdit {
+ private:
+    KList<TextLine> lines;
+ public:
+    TextEdit();
+    virtual void loadFile(const char* fileName);
+    virtual KList<TextLine>& getLines();
+    virtual void showText();
+    virtual void clear();
+};
 
-TextLine::TextLine() : KString() {
-}

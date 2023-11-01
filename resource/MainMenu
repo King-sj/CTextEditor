@@ -1,0 +1,12 @@
+Function 1: Implement a command to open and read a file, and execute the command to read the contents of the specified file into a data structure established by itself in memory.
+    Example: 1 data.txt
+Function 2: Output a specified range of lines on the screen, and execute this command to display certain lines of the text file that have been read into memory on the screen.
+Function 3: Line Insertion, execute this command to insert a line at a specified location.
+Function 4: Line Delete, execute the command to delete one line or several consecutive lines.
+Function 5: Inline text insertion, execute this command to insert one or more characters at a certain character in a certain line.
+Function 6: Inline text deletion, run this command to delete several characters at a certain character in a certain line.
+Function 7: Text Lookup, run this command to find the location of the first occurrence of a string starting from the specified line.
+Function 8: Save the text file, run this command to write the modified text content to a new file.
+Function 9: quit
+Function 10: clear
+Function 11: show Menu
