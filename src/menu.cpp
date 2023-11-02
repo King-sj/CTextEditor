@@ -37,6 +37,7 @@
 #include<iostream>
 
 #include<cxxopts.hpp>
+
 void init() {
     menu.loadFile(RESOURCE_PATH "MainMenu");
     showMenu();
@@ -49,28 +50,34 @@ inline void showMenu() {
 int exec() {
     int opt;
     while (true) {
-        std::cin >> opt;
-        switch (opt) {
-            // TODO(SJ) 使用脚本[python]自动定义宏变量
-            [[unlikely]]
-            case READ_FILE:
-                readFile();
-                break;
-            [[unlikely]]
-            case QUIT:
-                quit();
-                break;
-            [[likely]]
-            case CLEAR:
-                clear();
-                break;
-            [[likely]]
-            case SHOW_MENU:
-                showMenu();
-                break;
-            default:
-                std::cout << "input is invalid" << std::endl;
-        }
+        /**
+         * @brief 以下实现不够modern,已废弃
+         *
+         */
+        /* std::cin >> opt;
+         * switch (opt) {
+         *     // TODO(SJ) 使用脚本[python]自动定义宏变量
+         *     [[unlikely]]
+         *     case READ_FILE:
+         *         readFile();
+         *         break;
+         *     [[unlikely]]
+         *     case QUIT:
+         *         quit();
+         *         break;
+         *     [[likely]]
+         *     case CLEAR:
+         *         clear();
+         *         break;
+         *     [[likely]]
+         *     case SHOW_MENU:
+         *         showMenu();
+         *         break;
+         *     default:
+         *         std::cout << "input is invalid" << std::endl;
+         * }
+         */
+
     }
     return 0;
 }

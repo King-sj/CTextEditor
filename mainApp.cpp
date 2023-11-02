@@ -33,8 +33,10 @@
  * @todo none
  * @warning some shouldn't do
  */
-#include<menu.h>
-int main() {
-    init();
-    return exec();
+#include<parse.h>
+#include<base.h>
+#include<iostream>
+int main(int argc, const char* argv[]) {
+    std::cout << blueBegin << "Copyright (c) SJ begin 2023-10-24." << colorEnd << std::endl;
+    return parseExec(argc, argv);
 }

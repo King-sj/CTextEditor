@@ -19,8 +19,9 @@ option(BUILD_TEST "compile unit-test mod" ON)
 add_subdirectory(3rdparty)
 add_subdirectory(src)
 
-add_executable(app src/mainApp.cpp src/KString.cpp src/TextLine.cpp
-    src/TextEdit.cpp src/menu.cpp)
+add_executable(app mainApp.cpp)
+target_sources(app PUBLIC src/KString.cpp src/TextLine.cpp
+src/TextEdit.cpp src/menu.cpp src/parse.cpp)
 target_include_directories(app PUBLIC include/ 3rdparty/cxxopts/include)
 target_compile_definitions(app PRIVATE RESOURCE_PATH)
 

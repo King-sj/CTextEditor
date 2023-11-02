@@ -85,3 +85,15 @@ bool isInRange(T x, T l, T r) {
     #define likely(x) __builtin_expect(!!(x), 1)
     #define unlikely(x) __builtin_expect(!!(x), 0)
 #endif
+/// some color text
+#define blackBegin ("\033[30;1m")
+#define redBegin ("\033[31;1m")
+#define greenBegin ("\033[32;1m")
+#define yellowBegin ("\033[33;1m")
+#define blueBegin ("\033[34;1m")
+#define purpleBegin ("\033[35;1m")
+#define cyanBegin ("\033[36;1m")
+#define whiteBegin ("\033[37;1m")
+// #define colorEnd ("\033[0m")
+/// 蓝色好看， 从而我默认使用蓝色, lue lue lue
+#define colorEnd blueBegin
