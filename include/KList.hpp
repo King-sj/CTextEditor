@@ -163,11 +163,16 @@ class __declspec(dllexport) KList{
      */
     virtual void insertBack(const T& data);
     /**
-     * @brief 在当前节点后插入
+     * @brief 在当前节点前插入
      * @author SJ
      * @param data insert data
      */
     virtual void insertPre(const T& data);
+
+    virtual void insertBack(NativeList<T>* pos, KList<T> list);
+    virtual void insertPre(NativeList<T>* pos, KList<T> list);
+    virtual void insertBack(KList<T> list);
+    virtual void insertPre(KList<T> list);
     /**
      * @brief ++List<T>
      * @author SJ
@@ -251,6 +256,7 @@ class __declspec(dllexport) KList{
     size_t length;
 };
 
+//  below is reference
 
 template <typename T>
 KList<T>::KList() {
@@ -359,6 +365,33 @@ void KList<T>::insertPre(const T & data) {
 }
 
 template <typename T>
+inline void KList<T>::insertBack(NativeList<T> *pos, KList<T> list) {
+    this->gotoP(pos);
+    for (const auto& data : list) {
+        this->insertBack(data);
+        this->toNext();
+    }
+}
+
+template <typename T>
+inline void KList<T>::insertPre(NativeList<T> *pos, KList<T> list) {
+    this->gotoP(pos);
+    for (const auto& data : list) {
+        this->insertPre(data);
+    }
+}
+
+template <typename T>
+inline void KList<T>::insertBack(KList<T> list) {
+    this->insertBack(this->cur, list);
+}
+
+template <typename T>
+inline void KList<T>::insertPre(KList<T> list) {
+    this->insertPre(this->cur, list);
+}
+
+template <typename T>
 bool KList<T>::operator++() {
     return this->toNext();
 }
@@ -394,7 +427,9 @@ inline size_t KList<T>::getLength() const {
 
 template <typename T>
 inline void KList<T>::erase(NativeList<T> *pos) {
-    assert(pos != nullptr);
+    // assert(pos != nullptr);
+    if (nullptr == pos)return;
+
     if (pos->pre) pos->pre->nxt = pos->nxt;
     else this->head = pos->nxt;
 

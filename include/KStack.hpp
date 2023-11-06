@@ -1,6 +1,6 @@
 /**
  * @copyright ==================================================================
- *  Copyright (c) 2023-11-01.
+ *  Copyright (c) 2023-11-06.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -23,35 +23,34 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY SongJian, GROUP AND CONTRIBUTORS
  *  ===================================================================
- * @file TextEdit.h
+ * @file KStack.cpp
  * @author KSJ
- * @date 2023-11-01
+ * @date 2023-11-06
  * @version 0.0.1
- * @brief 文本编辑类
+ * @brief 栈的实现
  * @bug none found
  * @todo none
  * @warning some shouldn't do
 */
-#pragma once
-#include<TextLine.h>
-#include<KList.hpp>
-#include<KPoint.hpp>
-class TextEdit {
+#include<KVector.hpp>
+template<typename T>
+class KStack {
  private:
-    KList<TextLine> lines;
+    KVector<T> stack;
  public:
-    TextEdit();
-    virtual void loadFile(const char* fileName);
-    virtual void save(const char* fileName);
-    virtual KList<TextLine>& getLines();
-    virtual void showText();
-    virtual void showText(int l, int r);
-    virtual void insertLine(int pos, TextLine str);
-    virtual void insertInline(int line, int pos, KString str);
-    virtual void eraseLine(int l, int r);
-    virtual void eraseInline(int line, int l, int r);
-    KPoint<int32_t> find(KString str, int line);
-
-    virtual void clear();
+    KStack() = default;
+    ~KStack() = default;
+    void push(T t) {
+        stack.push_back(t);
+    }
+    T top() {
+        return stack[stack.size()-1];
+    }
+    void pop() {
+        stack.erase(stack.size()-1);
+    }
+    bool empty() {
+        return stack.size() == 0;
+    }
 };
 

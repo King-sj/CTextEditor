@@ -1,6 +1,6 @@
 /**
  * @copyright ==================================================================
- *  Copyright (c) 2023-11-01.
+ *  Copyright (c) 2023-11-05.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -23,35 +23,23 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY SongJian, GROUP AND CONTRIBUTORS
  *  ===================================================================
- * @file TextEdit.h
+ * @file KPoint.h
  * @author KSJ
- * @date 2023-11-01
- * @version 0.0.1
- * @brief 文本编辑类
+ * @date 2023-11-05
+ * @version
+ * @brief 点类
  * @bug none found
  * @todo none
  * @warning some shouldn't do
 */
-#pragma once
-#include<TextLine.h>
-#include<KList.hpp>
-#include<KPoint.hpp>
-class TextEdit {
- private:
-    KList<TextLine> lines;
- public:
-    TextEdit();
-    virtual void loadFile(const char* fileName);
-    virtual void save(const char* fileName);
-    virtual KList<TextLine>& getLines();
-    virtual void showText();
-    virtual void showText(int l, int r);
-    virtual void insertLine(int pos, TextLine str);
-    virtual void insertInline(int line, int pos, KString str);
-    virtual void eraseLine(int l, int r);
-    virtual void eraseInline(int line, int l, int r);
-    KPoint<int32_t> find(KString str, int line);
-
-    virtual void clear();
+#include<iostream>
+template<typename T>
+struct KPoint {
+    T x;
+    T y;
+    KPoint(T x, T y) : x(x), y(y) {}
+    friend std::ostream& operator<<(std::ostream& os, const KPoint<T>& p) {
+        os << "(" << p.x << "," << p.y << ")";
+        return os;
+    }
 };
-

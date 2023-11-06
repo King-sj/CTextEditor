@@ -93,5 +93,7 @@
         "cstdbool": "cpp",
         "version": "cpp"
     },
-    "C_Cpp.dimInactiveRegions": false
+    "C_Cpp.dimInactiveRegions": false,
+    "docwriter.style": "Auto-detect",
+    "docwriter.language": "English"
 }

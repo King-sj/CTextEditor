@@ -1,6 +1,6 @@
 /**
  * @copyright ==================================================================
- *  Copyright (c) 2023-11-01.
+ *  Copyright (c) 2023-11-06.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -23,35 +23,55 @@
  *
  *  THIS SOFTWARE IS PROVIDED BY SongJian, GROUP AND CONTRIBUTORS
  *  ===================================================================
- * @file TextEdit.h
+ * @file KVector.hpp
  * @author KSJ
- * @date 2023-11-01
+ * @date 2023-11-06
  * @version 0.0.1
- * @brief 文本编辑类
+ * @brief 动态数组
  * @bug none found
  * @todo none
  * @warning some shouldn't do
 */
-#pragma once
-#include<TextLine.h>
-#include<KList.hpp>
-#include<KPoint.hpp>
-class TextEdit {
+template<typename T>
+class KVector {
  private:
-    KList<TextLine> lines;
+    T* data;
+    size_t capacity = 1<<10;
+    size_t _size = 0;
  public:
-    TextEdit();
-    virtual void loadFile(const char* fileName);
-    virtual void save(const char* fileName);
-    virtual KList<TextLine>& getLines();
-    virtual void showText();
-    virtual void showText(int l, int r);
-    virtual void insertLine(int pos, TextLine str);
-    virtual void insertInline(int line, int pos, KString str);
-    virtual void eraseLine(int l, int r);
-    virtual void eraseInline(int line, int l, int r);
-    KPoint<int32_t> find(KString str, int line);
-
-    virtual void clear();
+    KVector() {
+        data = (T*)malloc(sizeof(T)*capacity);
+    }
+    ~KVector() {
+        delete[] data;
+        data = nullptr;
+    }
+    void push_back(T t) {
+        if (_size == capacity) {
+            capacity*=1.5;  // 1.5 is good by STL
+            data = (T*)realloc(data, sizeof(T)*capacity);
+        }
+        data[_size] = t;
+        _size++;
+    }
+    void erase(size_t index) {
+        if (index >= _size) {
+            throw "index out of range";
+            return;
+        }
+        for (size_t i = index; i < _size-1; i++) {
+            data[i] = data[i+1];
+        }
+        _size--;
+    }
+    T& operator[](size_t index) {
+        if (index >= _size) {
+            throw "index out of range";
+            return T();
+        }
+        return data[index];
+    }
+    size_t size() {
+        return _size;
+    }
 };
-

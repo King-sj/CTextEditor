@@ -33,10 +33,11 @@
  * @warning some shouldn't do
 */
 #include<parse.h>
-#include <iostream>
-#include "base.h"
-#include<menu.h>
+#include<iostream>
 #include<algorithm>
+#include "base.h"
+#include "menu.h"
+
 void end_parse(int argc, cxxopts::ParseResult& result) {
     std::cout << "\nArguments remain = " << argc << std::endl;
 
@@ -65,7 +66,85 @@ bool dealDefaultGroup(
 
     if (existFunction("q", "quit", result)) exit(0);
 
-    if (existFunction("clear", result)) clear();
+    if (existFunction("clear", result)) {
+        clear();
+        return true;
+    }
+
+    if (existFunction("read", result)) {
+        if (result.count("input")) {
+            readFile(KString(result["input"].as<std::string>()));
+        } else {
+            std::cout << redBegin << "No input file" << colorEnd << std::endl;
+            return false;
+        }
+        return true;
+    }
+    if (existFunction("show", result)) {
+        int l = 0;
+        int r = INT_MAX;  /// @attention this maybe not good
+        if (result.count("left")) l = result["left"].as<int32_t>();
+        if (result.count("right")) r = result["right"].as<int32_t>();
+        showText(l, r);
+        return true;
+    }
+
+    auto positional2Str = [&]()->std::string {
+        std::string res = "";
+        for (
+            const auto& str :
+            result["positional"].as<std::vector<std::string>>())
+        res += str + ",";
+        res.erase(res.length()-1);  // erase ','
+        return res;
+    };
+    if (existFunction("insert", result)) {
+        std::string res = positional2Str();
+        if (result.count("in")) insertInline(
+            result["line"].as<int32_t>(),
+            result["pos"].as<int32_t>(),
+            KString(res));
+        else
+            insertLine(
+                result["line"].as<int32_t>(),
+                TextLine(res));
+        return true;
+    }
+
+    if (existFunction("erase", result)) {
+        int l = 0;
+        int r = INT_MAX;  /// @attention this maybe not good
+        if (result.count("left")) l = result["left"].as<int32_t>();
+        if (result.count("right")) r = result["right"].as<int32_t>();
+
+        if (result.count("in"))
+            eraseInline(result["line"].as<int32_t>(), l, r);
+        else
+            eraseLine(l, r);
+        return true;
+    }
+
+    if (existFunction("find", result)) {
+        std::string res = positional2Str();
+        find(KString(res), result["line"].as<int32_t>());
+        return true;
+    }
+
+    if (existFunction("save", result)) {
+        save(result["output"].as<std::string>().c_str());
+        return true;
+    }
+
+    if (existFunction("checkBracket", result)) {
+        if (checkBracket()) {
+            std::cout << greenBegin << "Bracket is correct"
+            << colorEnd << std::endl;
+        } else {
+            std::cout << redBegin << "Bracket is incorrect"
+            << colorEnd << std::endl;
+        }
+        return true;
+    }
 
     if (result.count("input")) {
         std::cout << "Input = " << result["input"].as<std::string>()
@@ -85,7 +164,11 @@ bool dealDefaultGroup(
         }
         std::cout << "}" << std::endl;
     }
-    return false;  // TODO(SJ) true or false
+
+    std::cout << redBegin << "This func : '" << result["Func"].as<std::string>()
+        << "' not exist, using 'help --all' to views all function and args" << colorEnd
+        << std::endl;
+    return false;
 }
 
 bool dealMainParse(int argc, const char* argv[], cxxopts::Options& options) {
@@ -97,7 +180,7 @@ bool dealMainParse(int argc, const char* argv[], cxxopts::Options& options) {
     std::cout << "error parsing options: " << e.what() << "\n" <<std::endl;
     return false;
   }
-    std::cout << "\n" << std::endl;  // 多点空行， 看起来舒服
+    std::cout << colorEnd << std::endl;  // 多点空行， 看起来舒服, 恢复默认颜色
     return false;
 }
 
@@ -108,44 +191,23 @@ int parseExec(int argc, const char* argv[]) {
         dealMainParse(argc, argv, options);  // deal begin parse
         std::cout << ("(CTextEditor): ");
     }
-    int cnt = 1;
-    std::string tmp = "";
-    std::vector<std::string> parses{argv[0]};
-    auto packParses = [&]()->void {
-        /// convert vector<string> to char**
-        char** args = (char**)malloc(sizeof(char*)*parses.size());
-        for (int i = 0; i < parses.size(); i++) {
-            args[i] = (char*)malloc(sizeof(char)*parses[i].length());
-            strcpy(args[i], parses[i].c_str());
-        }
-
-        // deal parses
+    std::string line;
+    int32_t cnt = 0;
+    while (true) {
+        std::getline(std::cin, line);
+        cnt = 0;
+        char** args = consoleStr2CharPP(argv[0], line, cnt);
+        // for (int i = 0; i < cnt; i++) {
+        //     std::cout << args[i] << " ";
+        // }
         dealMainParse(cnt, const_cast<const char**>(args), options);
-
-        for (int i = 0; i < parses.size(); i++) {
+        for (int i = 0; i < cnt; i++) {
             delete args[i];
             args[i] = nullptr;
         }
         delete args;
         args = nullptr;
-    };
-    char ch;
-    while (true) {
-        ch = std::cin.get();
-        if (ch == '\n' || ch == ' ') {
-            cnt++;
-            parses.push_back(tmp);
-            if (ch == '\n') {
-                packParses();
-                std::cout << ("(CTextEditor): ");
-                parses.clear();
-                parses.push_back(argv[0]);  // push pragma name
-                cnt = 1;
-            }
-            tmp = "";
-            continue;
-        }
-        tmp += ch;
+        std::cout << ("(CTextEditor): ");
     }
     return 0;
 }
@@ -160,8 +222,56 @@ inline bool existFunction(const char* ch, const char * funcName, cxxopts::ParseR
     return existFunction(funcName, result) || existFunction(ch, result);
 }
 
+char ** consoleStr2CharPP(const char* pragmaName, const std::string & str, int& cnt) {
+    std::string tmp = "";
+    std::vector<std::string> parses{pragmaName};
+    cnt = 1;
+    auto push = [&]() {
+        if (tmp.size() == 0) return;
+        cnt++;
+        parses.push_back(tmp);
+        tmp = "";
+    };
+    char ch;
+    for (int i = 0; i < str.size(); i++) {
+        ch = str[i];
+        if (ch == ' ') {
+            push();
+            continue;
+        }
+        if (ch == '"') {
+            push();
+            while (i < str.size()) {
+                i++;
+                ch = str[i];
+                if (ch == '"') {
+                    push();
+                    break;
+                }
+                if (ch == '\\') {  // 转义
+                    i++;
+                    tmp += str[i];  // 直接转义，暂不支持特殊字符的转义
+                    continue;
+                }
+                tmp += ch;
+            }
+            push();
+            continue;
+        }
+        tmp += ch;
+    }
+    push();  // push 最后一个参数
+    // convert vector<string> to char**
+    char** res = (char**)malloc(sizeof(char*) * (cnt + 1));
+    for (int i = 0; i < cnt; i++) {
+        res[i] = (char*)malloc(sizeof(char) * (parses[i].size() + 1));
+        strcpy(res[i], parses[i].c_str());
+    }
+    return res;
+}
+
 cxxopts::Options init(int argc, const char* argv[]) {
-    std::unique_ptr<cxxopts::Options> allocated(new cxxopts::Options(argv[0], " - CTextEditor console tool"));
+    std::unique_ptr<cxxopts::Options> allocated(new cxxopts::Options("CTextEditor", " - CTextEditor console tool"));
     cxxopts::Options& options = *allocated;
 
     options.custom_help("custom help\n\n");
@@ -188,12 +298,40 @@ cxxopts::Options init(int argc, const char* argv[]) {
 
         ("q, quit", "exit program")
 
-        ("clear", "clear the screen");
+        ("clear", "clear the screen")
+
+        ("read", "read file\n" "example:\n read -i \"./a.txt\"")
+
+        ("show", "example:\n" "show -l 0 -r 10"
+        "show the data from [l,r),  l is 0 default, r is end default")
+
+        ("insert", "insertBack to object\n"
+        "example:\n insert --line 0 \"text\"\n"
+        "insert --in --line 0 --pos 0 \"text\"\n"
+        "if u wanna insert in the begin, please using \"-1\" emplace(attention:\" is must), default is begin")
+
+        ("erase", "erase some,\n example:\n"
+        "erase --in -l 0 -r 1")
+
+        ("find", "find str in file\n begin form line" "example:\n"
+        "find \"some str\" --line 0")
+
+        ("save", "save file" "example:\n"
+        "save -o \"file path\"")
+
+        ("checkBracket", "Check for bracket matches\n"
+        "example:\n"
+        "checkBracket");
     options.parse_positional({"Func", "positional"});
 
     options.add_options("Args")
         ("i,input", "Input file", cxxopts::value<std::string>())
         ("o,output", "Output file", cxxopts::value<std::string>())
-        ("a, all", "select all in current all function");
+        ("a, all", "select all in current all function")
+        ("l, left", "the left of range", cxxopts::value<int32_t>()->default_value("0"))
+        ("r, right", "the right of range", cxxopts::value<int32_t>())
+        ("pos", "the position of line", cxxopts::value<int32_t>()->default_value("0"))
+        ("line", "the number of line", cxxopts::value<int32_t>()->default_value("0"))
+        ("in", "inner the object", cxxopts::value<bool>()->default_value("0"), "0 or 1");
     return options;
 }

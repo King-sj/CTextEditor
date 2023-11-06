@@ -36,3 +36,6 @@
 
 TextLine::TextLine() : KString() {
 }
+
+TextLine::TextLine(std::string str) : KString(str) {
+}

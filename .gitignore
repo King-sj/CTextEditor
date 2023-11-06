@@ -169,3 +169,4 @@ CTestTestfile.cmake
 build/**
 .vs/**
 *.log
+.VSCodeCounter/**

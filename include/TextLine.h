@@ -34,9 +34,12 @@
 */
 #pragma once
 #include<KString.h>
+#include<string>
 class TextLine : public KString {
  private:
     /* data */
  public:
     TextLine();
+
+    explicit TextLine(std::string str);
 };

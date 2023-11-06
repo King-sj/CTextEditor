@@ -29,14 +29,15 @@
  * @date 2023-10-24
  * @version 0.0.2
  * @brief 文本编辑器入口文件
- * @bug none
- * @todo none
+ * @bug cmd下貌似不支持局部色彩
+ * 中文乱码问题
+ * @todo fix bugs
  * @warning some shouldn't do
  */
 #include<parse.h>
 #include<base.h>
 #include<iostream>
 int main(int argc, const char* argv[]) {
-    std::cout << blueBegin << "Copyright (c) SJ begin 2023-10-24." << colorEnd << std::endl;
+    std::cout << blueBegin << "Copyright (c) SJ begin from 2023-10-24." << colorEnd << std::endl;
     return parseExec(argc, argv);
 }

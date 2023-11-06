@@ -57,6 +57,16 @@ void TextEdit::loadFile(const char *fileName) {
     file.close();
 }
 
+void TextEdit::save(const char * fileName) {
+    std::ofstream file(fileName);
+    if (!file.is_open()) {
+        throw "open file failed";
+        return;
+    }
+    for (auto& line : this->lines) file << line << std::endl;
+    file.close();
+}
+
 KList<TextLine>& TextEdit::getLines() {
     return this->lines;
 }
@@ -68,6 +78,78 @@ void TextEdit::showText() {
         }
         std::cout << std::endl;
     }
+}
+
+void TextEdit::showText(int l, int r) {
+    int i = 0;
+    for (auto& line : this->lines) {
+        i++;
+        if (!isInRange(i - 1, l, r))continue;
+        for (auto& ch : line) {
+            std::cout << ch;
+        }
+        std::cout << std::endl;
+    }
+}
+
+void TextEdit::insertLine(int pos, TextLine str) {
+    assert(pos >= -1 && pos < (int)this->lines.getLength());
+    this->lines.toHead();
+    // this->lines++;
+    if (pos == -1) {
+        this->lines.insertPre(str);
+    } else {
+        for (int i = 0; i < pos; i++) this->lines++;
+        this->lines.insertBack(str);
+    }
+}
+
+void TextEdit::insertInline(int line, int pos, KString str) {
+    assert(line >= 0 && line < (int)this->lines.getLength());
+    this->lines.toHead();
+    // this->lines++;
+    for (int i = 0; i < line; i++)this->lines++;
+    this->lines.getData().toHead();
+    this->lines.getData()++;
+    if (pos == -1) {
+        this->lines.getData().insertPre(str);
+    } else {
+        for (int i = 0; i < pos; i++)this->lines.getData()++;
+        this->lines.getData().insertBack(str);
+    }
+}
+
+void TextEdit::eraseLine(int l, int r) {
+    this->lines.toHead();
+
+    for (int i = 0; i < l; i++) this->lines++;
+    for (int i = l; i < r; i++)
+        this->lines.erase();
+}
+
+void TextEdit::eraseInline(int line, int l, int r) {
+    this->lines.toHead();
+    for (int i = 0; i < line; i++) this->lines++;
+    this->lines.getData().toHead();
+    for (int i = 0; i < l; i++) this->lines.getData()++;
+    for (int i = l; i < r; i++)
+        this->lines.getData().erase();
+}
+
+KPoint<int32_t> TextEdit::find(KString str, int lin) {
+    int l  = 0;
+    int p = 0;
+    for (auto& line : this->lines) {
+        if (l < lin) {
+            l++;
+            continue;
+        }
+        std::cout << line << std::endl;
+        p = line.find(str);
+        if (p != -1) return KPoint<int32_t>(l, p);
+        l++;
+    }
+    return KPoint<int32_t>(-1, -1);
 }
 
 void TextEdit::clear() {

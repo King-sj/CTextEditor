@@ -35,8 +35,9 @@
 #include<stdlib.h>
 #include<menu.h>
 #include<iostream>
-
+#include<algorithm>
 #include<cxxopts.hpp>
+#include"KStack.hpp"
 
 void init() {
     menu.loadFile(RESOURCE_PATH "MainMenu");
@@ -82,16 +83,72 @@ int exec() {
     return 0;
 }
 
-void readFile() {
-    std::string path;
-    std::cin >> path;
+void showText(int l, int r) {
+    std::cout << whiteBegin;
+    if (l < 0 || r < 0 || l > r) return;
+    text.showText(l, std::min(r, int(text.getLines().getLength())));  /// @attention this maybe caused some bug
+    std::cout << colorEnd;
+}
+
+void insertLine(int pos, TextLine str) {
+    text.insertLine(pos, str);
+}
+
+void insertInline(int line, int pos, KString str) {
+    text.insertInline(line , pos, str);
+}
+
+void eraseLine(int l, int r) {
+    text.eraseLine(l, r);
+}
+
+void eraseInline(int line, int l, int r) {
+    text.eraseInline(line, l, r);
+}
+
+void find(KString str, int line) {
+    auto res = text.find(str, line);
+    if (res.x == -1 || res.y == -1) {
+        std::cout << redBegin << "not found" << colorEnd << std::endl;
+        return;
+    }
+    std::cout << greenBegin << "(line, pos) : " << res \
+    << colorEnd << std::endl;
+}
+
+void save(const char *fileName) {
+    text.save(fileName);
+}
+
+bool checkBracket() {
+    KStack<char> stack_1, stack_2;
+    // check () {}
+    for (auto& line : text.getLines())
+    for (auto& ch : line) {
+        if (ch == '(')stack_1.push(ch);
+        if (ch == '{')stack_2.push(ch);
+        if (ch == ')') {
+            if (stack_1.empty()) return false;
+            stack_1.pop();
+        }
+        if (ch == '}') {
+            if (stack_2.empty()) return false;
+            stack_2.pop();
+        }
+    }
+    if (stack_1.empty() && stack_2.empty()) return true;
+    return false;
+}
+
+void readFile(KString file) {
+    std::string path = file.toString();
     try {
         text.loadFile(path.c_str());
     } catch(const char* e) {
         std::cout << e << std::endl;
         return;
     }
-    std::cout << "load file done" << std::endl;
+    std::cout << greenBegin <<"load file done" << colorEnd << std::endl;
 }
 
 void quit() {

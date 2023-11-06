@@ -96,3 +96,14 @@ inline bool existFunction(const char* funcName, cxxopts::ParseResult& result);
  * @return false
  */
 inline bool existFunction(const char* ch, const char* funcName, cxxopts::ParseResult& result);
+
+/**
+ * @brief 将控制台读入的命令(str)转换为char**
+ * @attention 需要手动返回值释放内存
+ * @author SJ
+ * @param pragmaName 程序路径
+ * @param str
+ * @param[in] cnt 返回参数数量
+ * @return char**
+ */
+char ** consoleStr2CharPP(const char* pragmaName, const std::string & str, int& cnt);

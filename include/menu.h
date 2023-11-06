@@ -48,11 +48,21 @@ static TextEdit menu, text;
  * @brief 初始化
  * @author SJ
  */
+[[deprecated]]
 void init();
+[[deprecated]]
 void update();
-void readFile();
+/**
+ * @brief 读入文件
+ * @author SJ
+ * @param file 路径
+ */
+void readFile(KString file);
+[[deprecated]]
 void quit();
+
 void clear();
+[[deprecated]]
 __attribute((__always_inline__))
 void showMenu();
 /**
@@ -61,3 +71,23 @@ void showMenu();
  * @return int 正常退出返回0
  */
 int exec();
+/**
+ * @brief 展示[l, r)范围的文本
+ * @param l
+ * @param r
+ */
+void showText(int l, int r);
+
+void insertLine(int pos, TextLine str);
+
+void insertInline(int line, int pos, KString str);
+
+void eraseLine(int l, int r);
+
+void eraseInline(int line, int l, int r);
+
+void find(KString str, int line);
+
+void save(const char* fileName);
+
+bool checkBracket();
